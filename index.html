@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Habrá veces</title>
+<style>
+:root{--bg:#030a0e;--body:#ffffff;--glow:#3f9aa8;--ring:#3a8a96;--ringhi:#d6f6fb;--water:#1f5c6b;--refl:#c3eef5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:var(--bg)}
+body{display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer}
+pre{margin:0;font-family:"Courier New",ui-monospace,monospace;line-height:1.12;color:var(--bg);white-space:pre;user-select:none}
+.b{color:var(--body);text-shadow:0 0 6px #fff}.g{color:var(--glow)}.d{color:#1b4752}.r{color:var(--ring)}.h{color:var(--ringhi);text-shadow:0 0 5px #8fd8e4}.w1{color:#12313b}.w2{color:#2b7a8a}.w{color:var(--water)}.f{color:var(--refl)}
+#snd{position:fixed;left:3vw;bottom:calc(2vh + env(safe-area-inset-bottom,0px));z-index:3;background:none;border:1px solid #1f5c6b;color:#5fb4c2;font:12px "Courier New",monospace;padding:4px 10px;cursor:pointer}#snd:focus-visible{outline:2px solid #d6f6fb}
+#hint{position:fixed;right:3vw;bottom:calc(2vh + env(safe-area-inset-bottom,0px));z-index:2;font:12px "Courier New",monospace;color:#1f5c6b;pointer-events:none}
+#s2{position:fixed;inset:0;display:none;align-items:center;justify-content:center;box-sizing:border-box;padding:calc(8vh + env(safe-area-inset-top,0px)) 8vw calc(8vh + env(safe-area-inset-bottom,0px));font-family:"Courier New",ui-monospace,monospace;color:#d6f6fb;font-size:clamp(15px,2.3vw,30px);line-height:1.65;text-align:center;white-space:pre-wrap;text-shadow:0 0 8px #3f9aa8}
+#s2 div{max-width:30em}#s2 .t{font-size:1.5em;line-height:1.3}#s2 i{font-style:normal;color:#2b7a8a;text-shadow:none}#s2 small{display:block;margin-top:2em;font-size:.55em;color:#1f5c6b;text-shadow:none}
+</style>
+</head>
+<body>
+<div id="wrap"><pre id="s" aria-label="Figura humana luminosa agachada, rodeada por una espiral de letras y números, sobre agua hecha de números"></pre><pre id="w" aria-hidden="true"></pre></div>
+<button id="snd" type="button">activar sonido</button>
+<div id="hint">clic: saltar a la siguiente escena</div>
+<div id="s2"><div id="s2t"></div></div>
+<script>
+const W=130,HOR=49,H=HOR,WH=15,CX=62,CY=62;
+const MS="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000001478999741000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000169988888998300000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000001357998888777888920000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000001467888999998888766666678860000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000379999899998887788766665567860000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000027988887778899888887766666567810000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000598866787656789965888777788875100000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000006987510588741578980388888862100000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000069876104678875678995034221200000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000598762015667887678999300000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000002987630035545788657899940000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000007886400146545678851589995000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000029876200466777789985147999511000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000049865004567789998744622577888887665555410000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000068762025777889950000361001234666777777885000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000068776456788898300024688877777777767888659300000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000058887778888996246887777777665446656888747200000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000049877778899998877665444332245665447877363000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000049877678898877653210000036764235678861100000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000049877667777653100000002665200157897300000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000038876533432100000001357520000478851000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000018876300000000002356886100015786200000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000003876510000012456785461001478620000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000267654333556775201520026862000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000002456777765200136301476200000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000168875136830000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000577766578200000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000002655236784000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000103557882000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000467890000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000468991000000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000016998300000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000256510000000000000000000000000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+const M=MS.split("|").map(r=>[...r].map(Number));
+const G=M.map((row,r)=>row.map((v,c)=>{if(v>=2)return 0;let m=9;for(let y=-3;y<=3;y++)for(let x=-6;x<=6;x++){const n=M[r+y]&&M[r+y][c+x];if(n>=2){const d=Math.hypot(x/2.2,y);if(d<m)m=d}}return m}));
+const RAMP=" .:-=+*#%@";
+const TXT="EL AMOR NO SE SOSTIENE DE NADA, LOS DIOSES SON METÁFORAS, EL UNIVERSO HABLA EN FÍSICA. 0123456789 ";
+const WAVE="._-~≈=+*o08%";
+let t0=performance.now();
+function hash(n){const s=Math.sin(n*127.1)*43758.5;return s-Math.floor(s)}
+function frame(now){
+const t=(now-t0)/1000,rev=Math.min(1,t/5);
+const fd=t-26;if(fd>0)document.getElementById('wrap').style.opacity=Math.max(0,1-fd/3);if(fd>3){startS2();return}
+const ch=new Array(W*H).fill(' '),cl=new Array(W*H).fill('');
+const put=(c,r,k,v,pri)=>{if(c<0||c>=W||r<0||r>=H)return;const i=r*W+c;ch[i]=k;cl[i]=v};
+// espiral infinita: nace detrás del cuerpo y sale fuera de la pantalla, sin cortes
+const pitch=8/(Math.PI*2),Rmax=rev<1?10+rev*100:1e9;
+let th=0,k=0,rr=8;
+while(rr<=98&&rr<=Rmax){
+ const ph=th+t*.28;
+ const c=Math.round(CX+rr*Math.cos(ph)),r=Math.round((CY+rr*Math.sin(ph)*.98)/2);
+ const flick=hash(k+Math.floor(t*6))>.93;
+ const near=Math.sin(ph-t*.5)>0.2;
+ put(c,r,TXT[k%TXT.length],rr>66?'d':(near||flick?'h':'r'));
+ th+=1.55/rr;k++;rr=8+pitch*th}
+// partículas del halo
+for(let i=0;i<70;i++){const a=i*2.399+t*.12,rr=34+hash(i)*22;const c=Math.round(CX+rr*Math.cos(a)),r=Math.round((CY+rr*Math.sin(a))/2);
+ if(r>=0&&r<HOR&&ch[r*W+c]===' ')put(c,r,hash(i+Math.floor(t*2))>.5?'.':'·','h')}
+// cuerpo
+const br=Math.sin(t*1.2)*.04;
+for(let r=0;r<HOR;r++)for(let c=0;c<W;c++){
+ const v=M[r][c];
+ if(v>=2){const idx=Math.max(1,Math.min(9,Math.round(v+br*9)));put(c,r,RAMP[idx],'b')}
+ else{const g=G[r][c];if(g<2.6){const i=r*W+c;if(ch[i]===' '||cl[i]==='w')put(c,r,g<1.4?':':'.','g')}}}
+function render(ch,cl,w,h){let out='',last='',buf='';
+ for(let i=0;i<w*h;i++){
+  if(i%w===0&&i){out+=(last?`<span class="${last}">${buf}</span>`:buf)+'\n';buf='';last=''}
+  const c=cl[i]||'';if(c!==last&&buf){out+=last?`<span class="${last}">${buf}</span>`:buf;buf=''}
+  last=c;buf+=ch[i]}
+ return out+(last?`<span class="${last}">${buf}</span>`:buf)}
+document.getElementById('s').innerHTML=render(ch,cl,W,H);
+// agua: doble resolución, con perspectiva
+const W2=W*2,H2=WH*2,wc=new Array(W2*H2),wl=new Array(W2*H2),DG='0123456789';
+const fr=Math.floor(t*3);
+for(let j=0;j<H2;j++){const u=(j+1)/H2,zw=1/(u+.1),d=j/2;
+ const wob=Math.sin(zw*4-t*2.2)*1.8+Math.sin(zw*9-t*3+j)*.8;
+ for(let i=0;i<W2;i++){const x=i/2;
+  const w=Math.sin(zw*3-t*1.7+x*.08)*.5+Math.sin(zw*5.3-t*2.3-x*.13)*.3+Math.sin(zw*9.5-t*3.1+x*.31)*.2;
+  const v=(w+1)/2,n=hash(i*13+j*7+fr);
+  let I=.18+.4*v+.3*(1-u)*(1-u)+(n-.5)*.12;
+  const mv=(M[Math.floor(HOR-1-d)]||[])[Math.round(x+wob*(.6+w*.4))]||0;
+  let k,cls;
+  if(mv>=2&&d<14&&w>-.55){const sT=(mv/9)*(1-d/15)*(.7+.3*v);
+   if(sT>.22){k=n>.35?DG[Math.floor(hash(i+j*31+fr)*10)]:'0123456789@%#'[(i+j)%13];cls=sT>.45?'f':'w2';wc[j*W2+i]=k;wl[j*W2+i]=cls;continue}}
+  if(I<.3){k=n>.5?'.':n>.2?',':'_';cls='w1'}
+  else if(I<.45){k='~-_:'[Math.floor(n*4)];cls='w1'}
+  else if(I<.6){k=n>.6?DG[Math.floor(n*10)]:'~=-+'[Math.floor(n*4)];cls='w2'}
+  else if(I<.78){k=DG[Math.floor(hash(i*3+j+fr)*10)];cls='w2'}
+  else{k='8%#@0O'[Math.floor(n*6)];cls='f'}
+  wc[j*W2+i]=k;wl[j*W2+i]=cls}}
+document.getElementById('w').innerHTML=render(wc,wl,W2,H2);
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches||t<.1)requestAnimationFrame(frame)}
+const L=["Habrá veces en que te des cuenta\nde que el amor no se sostiene de nada,\ny con ello no habrá nada que hacer\nal respecto.","A veces te darás cuenta\nde que los imperios se construyen sobre la velocidad,\nde que los niños de tu época\nya no sueñan con dragones.","A veces aseguro\nque la diversión es ver\nlos elementos cósmicos materializarse.","Otros días te enterarás\nde que los dioses son metáforas,\nde que la humanidad confunde\nla conciencia con el lenguaje\ny la muerte con una pregunta sin gramática.","Sabrás que el universo habla en física\ny te preguntarás por qué muchos\ninsisten en traducirlo a poesía.","Cuáles fueron los errores\nque nos hicieron humanos.\nQué belleza te hizo mortal.","Sabrás del campo\nde interoperabilidad biotécnica\ny entenderás que no es más\nque una narración persistente\nsostenida por algoritmos evolutivos\ny la fe de que algo late."];
+const GL='0123456789~=+*%#@';
+let s1on=true,run=0,skipS2=null;const hint=x=>{document.getElementById('hint').textContent=x};
+
+// ---- sonido (Web Audio, sintetizado) ----
+let AC,master,verb,ambG,ambF,pingT,muted=false;
+function initAudio(){
+ if(AC){if(AC.state==='suspended')AC.resume();return}
+ const AX=window.AudioContext||window.webkitAudioContext;if(!AX)return;
+ AC=new AX();master=AC.createGain();master.gain.value=muted?0:.85;master.connect(AC.destination);
+ const n=AC.sampleRate*4,ir=AC.createBuffer(2,n,AC.sampleRate);
+ for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.6)}
+ verb=AC.createConvolver();verb.buffer=ir;const vg=AC.createGain();vg.gain.value=.9;verb.connect(vg).connect(master);
+ ambG=AC.createGain();ambG.gain.value=0;ambF=AC.createBiquadFilter();ambF.type='lowpass';ambF.frequency.value=1400;
+ ambG.connect(ambF);ambF.connect(master);ambF.connect(verb);
+ const dg=AC.createGain();dg.gain.value=.09;dg.connect(ambG);
+ [55,55.35,110,110.7,165,220.5,330.8].forEach((f,i)=>{const o=AC.createOscillator();o.type=i>1?'sine':'triangle';o.frequency.value=f;const g=AC.createGain();g.gain.value=i>1?.7:1;o.connect(g).connect(dg);o.start()});
+ const lf=AC.createOscillator(),lg=AC.createGain();lf.frequency.value=.06;lg.gain.value=.03;lf.connect(lg).connect(dg.gain);lf.start();
+ // aire / vacío: ruido marrón muy filtrado
+ const nb=AC.createBuffer(1,AC.sampleRate*6,AC.sampleRate),nd=nb.getChannelData(0);let l=0;
+ for(let i=0;i<nd.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;nd[i]=l*3.5}
+ const ns=AC.createBufferSource();ns.buffer=nb;ns.loop=true;const nf=AC.createBiquadFilter();nf.type='bandpass';nf.frequency.value=500;nf.Q.value=.5;
+ const ng=AC.createGain();ng.gain.value=1.3;ns.connect(nf).connect(ng).connect(ambG);ns.start();
+ const lf2=AC.createOscillator(),lg2=AC.createGain();lf2.frequency.value=.04;lg2.gain.value=260;lf2.connect(lg2).connect(nf.frequency);lf2.start();
+ audioScene(s1on?1:2)}
+function audioScene(n){
+ if(!AC)return;const t=AC.currentTime;
+ ambG.gain.cancelScheduledValues(t);ambG.gain.setTargetAtTime(n===1?1.5:.12,t,n===1?1.5:1.2);
+ ambF.frequency.setTargetAtTime(n===1?1400:140,t,1.2);
+ clearInterval(pingT);if(n===1){const ping=()=>{const f=[392,523.3,784,1046.5][Math.floor(Math.random()*4)];tone(f,4,.06,'sine',1.4,.5);tone(f*2,3,.02,'sine',1.4,.5);};pingT=setInterval(()=>{if(Math.random()<.7)ping()},6500);setTimeout(()=>{if(s1on)ping()},2500)}}
+function tone(f,dur,g,type,send,att,f2){
+ if(!AC||muted)return;const t=AC.currentTime,o=AC.createOscillator(),e=AC.createGain();
+ o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+ e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(g,t+(att||.005));e.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(e);e.connect(master);if(send){const sg=AC.createGain();sg.gain.value=send;e.connect(sg).connect(verb)}
+ o.start(t);o.stop(t+dur+.05)}
+let lastTk=0,doneLine=-1;
+function decodeTick(f){const b=170+f*170+Math.random()*40;tone(b,.13,.16,'triangle',.4);tone(b*2.01,.09,.05,'sine',.3)}
+function dissolveTick(q){const b=300-q*140+Math.random()*30;tone(b,.16,.12,'triangle',.5);tone(b*2.01,.1,.03,'sine',.4)}
+function lineDone(i){const nt=[147,165,185,196,220][i%5];tone(nt,2.8,i?.16:.2,'triangle',1,.05);tone(nt*2,2.2,.05,'sine',1,.05);tone(nt*3,1.8,.025,'sine',1,.05);}
+function toggleSound(){
+ if(!AC){muted=false;initAudio()}else{muted=!muted;master.gain.setTargetAtTime(muted?0:.85,AC.currentTime,.1)}
+ document.getElementById('snd').textContent=muted||!AC?'sonido: apagado':'sonido: activo'}
+document.getElementById('snd').addEventListener('click',e=>{e.stopPropagation();toggleSound()});
+addEventListener('pointerdown',e=>{if(e.target.id==='snd')return;if(!AC)initAudio();else if(AC.state==='suspended')AC.resume();document.getElementById('snd').textContent=muted?'sonido: apagado':'sonido: activo'});
+function startS2(){
+ s1on=false;const my=++run;audioScene(2);doneLine=-1;
+ document.getElementById('wrap').style.display='none';
+ const box=document.getElementById('s2'),el=document.getElementById('s2t');box.style.display='flex';
+ const plan=[];let acc=1.2;
+ L.forEach((x,i)=>{const n=x.length,tin=1+n*.022,hold=1.8+n*.05,tout=i==L.length-1?4:1.3;plan.push({a:acc,tin,hold,tout});acc+=tin+hold+tout+.5});
+ let t1=performance.now();hint('clic: siguiente frase');
+ skipS2=()=>{const t=(performance.now()-t1)/1000,nx=plan.find(p=>p.a>t+.05);if(nx)t1-=(nx.a-t)*1000;else restart()};
+ function tick(now){
+  if(my!==run)return;
+  const t=(now-t1)/1000;
+  let i=plan.findIndex(p=>t>=p.a&&t<p.a+p.tin+p.hold+p.tout);
+  if(i<0){if(t>acc&&AC&&!tick.f){tick.f=1;ambG.gain.setTargetAtTime(0,AC.currentTime,2.5)}el.innerHTML=t>acc?'<small>clic para repetir</small>':'';if(t<acc+1)requestAnimationFrame(tick);else if(t<acc+30)requestAnimationFrame(tick);return}
+  const p=plan[i],x=L[i],n=x.length,u=t-p.a;let h='';
+  if(now-lastTk>60){if(u<p.tin){decodeTick(u/p.tin);lastTk=now}else if(u>p.tin+p.hold){dissolveTick((u-p.tin-p.hold)/p.tout);lastTk=now}}
+  if(u>=p.tin&&doneLine!==i){doneLine=i;lineDone(i)}
+  const fr=Math.floor(t*14);
+  for(let j=0;j<n;j++){const ch=x[j];if(ch===' '||ch==='\n'){h+=ch;continue}
+   const r=hash(j*3.7+i*11);let st;
+   if(u<p.tin)st=(j/n+r*.3<u/p.tin*1.3)?1:0;
+   else if(u<p.tin+p.hold)st=1;
+   else{const q=(u-p.tin-p.hold)/p.tout;st=q<r*.7?1:q<r*.7+.3?0:2}
+   if(st===1)h+=ch;else if(st===0)h+='<i>'+GL[Math.floor(hash(j+fr*1.7+i)*GL.length)]+'</i>';else h+=' '}
+  el.innerHTML='<span>'+h+'</span>';
+  requestAnimationFrame(tick)}
+ requestAnimationFrame(tick)}
+function fit(){const fs=Math.min(innerWidth/(W*.6),innerHeight/((H+WH)*1.12));document.getElementById('s').style.fontSize=fs+'px';document.getElementById('w').style.fontSize=fs/2+'px'}
+addEventListener('resize',fit);fit();
+function restart(){run++;audioScene(1);skipS2=null;document.getElementById('s2').style.display='none';const w=document.getElementById('wrap');w.style.display='';w.style.opacity=1;hint('clic: saltar a la siguiente escena');t0=performance.now();if(!s1on){s1on=true;requestAnimationFrame(frame)}}
+addEventListener('click',()=>{if(s1on){t0=performance.now()-29.2e3;return}if(skipS2)skipS2()});
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
